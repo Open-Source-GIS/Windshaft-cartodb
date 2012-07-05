@@ -12,11 +12,15 @@ functionality and custom filters for authentication
 * provides a infowindow endpoint for windshaft
 * provides a map_metadata endpoint for windshaft
 
+Requirements
+------------
+
+ - node-0.6.x
+
 Install
 -------
 
 ```
-git clone
 npm install
 ```
 
