@@ -2,7 +2,7 @@ var assert      = require('assert');
 var tests       = module.exports = {};
 var _           = require('underscore');
 var querystring = require('querystring');
-require(__dirname + '/../test_helper');
+require(__dirname + '/../support/test_helper');
 
 var CartodbWindshaft = require(__dirname + '/../../lib/cartodb/cartodb_windshaft');
 var serverOptions = require(__dirname + '/../../lib/cartodb/server_options');
