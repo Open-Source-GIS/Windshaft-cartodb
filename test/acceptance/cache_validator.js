@@ -1,10 +1,10 @@
-var assert      = require('assert');
+var assert      = require('../support/assert');
 var net = require('net');
 require(__dirname + '/../support/test_helper');
 var CacheValidator = require(__dirname + '/../../lib/cartodb/cache_validator');
 var tests = module.exports = {};
 
-function VarnishEmu(on_cmd_recieved) {
+function VarnishEmu(on_cmd_recieved, test_callback) {
     var self = this;
     var welcome_msg = 'hi, im a varnish emu, right?';
 
@@ -21,15 +21,25 @@ function VarnishEmu(on_cmd_recieved) {
       });
     });
     server.listen(1337, "127.0.0.1");
-}
 
-tests['working'] = function() { assert.ok(true); };
-
-tests['should call purge on varnish when invalidate database'] = function() {
-    var varnish = new VarnishEmu(function(cmds) {
-        assert.ok(cmds.length == 1);
-        assert.equal('purge obj.http.X-Cache-Channel == test_db:test_cache\n', cmds[0]);
+    server.on('listening', function(){
+      test_callback();
     });
-    CacheValidator.init('localhost', 1337);
-    CacheValidator.invalidate_db('test_db', 'test_cache');
 }
+
+
+suite('cache_validator', function() {
+
+    test('should call purge on varnish when invalidate database', function(done) {
+        var varnish = new VarnishEmu(function(cmds) {
+            assert.ok(cmds.length == 1);        
+            assert.equal('purge obj.http.X-Cache-Channel == test_db:test_cache\n', cmds[0]);
+            done();
+        },
+        function() {
+            CacheValidator.init('localhost', 1337);
+            CacheValidator.invalidate_db('test_db', 'test_cache');
+        });
+    });
+
+});
