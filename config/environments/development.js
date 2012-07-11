@@ -6,7 +6,7 @@ var config = {
     ,cache_enabled: false
     ,postgres: {
         type: "postgis",
-        user: "tileuser",
+        user: "publicuser",
         host: '127.0.0.1',
         port: 5432,
         extent: "-20005048.4188,-20005048.4188,20005048.4188,20005048.4188",

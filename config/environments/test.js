@@ -5,7 +5,7 @@ var config = {
     ,enable_cors: true
     ,cache_enabled: false
     ,postgres: {
-        user: "tileuser",
+        user: "publicuser",
         host: '127.0.0.1',
         port: 5432,
         srid: 4326,
