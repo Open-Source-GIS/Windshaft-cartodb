@@ -1,6 +1,7 @@
 var assert      = require('../support/assert');
 var tests       = module.exports = {};
 var _           = require('underscore');
+var redis       = require('redis');
 var querystring = require('querystring');
 require(__dirname + '/../support/test_helper');
 
@@ -10,7 +11,12 @@ var server = new CartodbWindshaft(serverOptions);
 server.setMaxListeners(0);
 
 suite('server', function() {
+
+    var redis_client = redis.createClient(global.environment.redis.port);
     
+    suiteSetup(function(){
+    });
+
     test("get call to server returns 200", function(done){
         assert.response(server, {
             url: '/',
@@ -195,6 +201,15 @@ suite('server', function() {
             status: 200,
             headers: { 'Content-Type': 'image/png' }
         }, function() { done(); });
+    });
+
+    suiteTeardown(function(done) {
+        // This test will add map_style records, like
+        // 'map_style|null|publicuser|my_table',
+        redis_client.keys("map_style|*", function(err, matches) {
+            _.each(matches, function(k) { redis_client.del(k); });
+            done();
+        });
     });
     
 });
