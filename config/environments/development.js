@@ -7,6 +7,7 @@ var config = {
     ,postgres: {
         type: "postgis",
         user: "publicuser",
+        db_user: 'development_cartodb_user_<%= user_id %>',
         host: '127.0.0.1',
         port: 5432,
         extent: "-20005048.4188,-20005048.4188,20005048.4188,20005048.4188",

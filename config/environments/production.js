@@ -6,6 +6,7 @@ var config = {
     ,cache_enabled: true
     ,postgres: {
         user: "publicuser",
+        db_user: 'cartodb_user_<%= user_id %>',
         host: '127.0.0.1',
         port: 6432,
         extent: "-20005048.4188,-20005048.4188,20005048.4188,20005048.4188",

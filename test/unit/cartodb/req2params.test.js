@@ -53,7 +53,7 @@ suite('req2params', function() {
           // database_name for user "vizzuality" (see test/support/prepare_db.sh)
           assert.equal(req.params.dbname, 'cartodb_test_user_1_db');
           // id for user "vizzuality" (see test/support/prepare_db.sh)
-          assert.equal(req.params.dbuser, 'development_cartodb_user_1');
+          assert.equal(req.params.dbuser, 'test_cartodb_user_1');
  
           opts.req2params({headers: { host:'vizzuality' }, query: {map_key: '1235'} }, function(err, req) {
               // wrong key resets params to no user
