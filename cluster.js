@@ -7,7 +7,7 @@
  * environments: [development, production]
  */
 
-var cluster = require('cluster');
+var Cluster = require('cluster2');
 
 // sanity check
 var ENV = process.argv[2]
@@ -34,12 +34,19 @@ var cartoData = require('./lib/cartodb/carto_data');
 var Windshaft = require('windshaft');
 var serverOptions = require('./lib/cartodb/server_options');
 
-ws = CartodbWindshaft(serverOptions);
-cluster(ws)
-  .use(cluster.logger('logs'))
-  .use(cluster.stats())
-  .use(cluster.pidfiles('pids'))
-  .set('workers', 1)
-  .listen(global.environment.port, global.environment.host);
+var ws = CartodbWindshaft(serverOptions);
+
+var cluster = new Cluster({
+  port: global.environment.port
+});
+
+cluster.listen(function(cb) {
+  cb(ws);
+});
+
+  //.use(cluster.logger('logs'))
+  //.use(cluster.stats())
+  //.use(cluster.pidfiles('pids'))
+  //.set('workers', 1)
 
 console.log("Windshaft tileserver started on port " + global.environment.port);
