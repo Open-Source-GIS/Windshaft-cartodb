@@ -22,7 +22,7 @@ Requirements
  [for cache control]
  - CartoDB-SQL-API 1.0.0+
  - CartoDB 0.9.5+ (for CDB_QueryTables)
- - Varnish (version?)
+ - Varnish (https://www.varnish-cache.org)
 
 Configure
 ---------
