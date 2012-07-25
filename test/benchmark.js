@@ -65,7 +65,8 @@ for(var i = 0; i < N; ++i) {
     http.get(opt, function(res) {
       res.body = '';
       res.on('data', function(chunk) {
-        res.body += chunk;
+        // Save only first chunk, to reduce cost of the operation
+        if ( res.body.length == 0 ) res.body += chunk;
       });
       res.on('end', function() {
         if ( res.statusCode == 200 ) pass();
