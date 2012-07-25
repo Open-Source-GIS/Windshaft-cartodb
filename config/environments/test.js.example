@@ -11,7 +11,9 @@ var config = {
         host: '127.0.0.1',
         port: 5432,
         srid: 4326,
-        extent: "-20005048.4188,-20005048.4188,20005048.4188,20005048.4188",
+        extent: "-180,-90,180,90",
+        geometry_field: "the_geom",
+        srid: 4326,
         simplify: true
     }
     ,redis: {
