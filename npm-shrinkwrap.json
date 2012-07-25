@@ -185,9 +185,6 @@
               }
             }
           }
-        },
-        "hiredis": {
-          "version": "0.1.14"
         }
       }
     },
@@ -248,9 +245,6 @@
               "version": "1.0.1"
             }
           }
-        },
-        "hiredis": {
-          "version": "0.1.14"
         }
       }
     },
@@ -264,7 +258,7 @@
       "version": "0.7.2"
     },
     "hiredis": {
-      "version": "0.1.12"
+      "version": "0.1.14"
     },
     "request": {
       "version": "2.9.202"
