@@ -233,7 +233,7 @@ suite('server', function() {
     test("get'ing a tile with data from private table should fail when unauthenticated (uses old redis key)", function(done){
         var sql = querystring.stringify({
           sql: "SELECT * FROM test_table_private_1",
-          cache_buster:3,
+		      cache_buster:3, // this is to avoid getting the cached response
           // 1235 is written in rails:users:vizzuality:map_key SET
           // See https://github.com/Vizzuality/Windshaft-cartodb/issues/39
           map_key: 1235
@@ -245,6 +245,30 @@ suite('server', function() {
         },{
             status: 500,
         }, function() { done(); });
+    });
+
+    test("private table with no map key access should fail when using no map_key param (#40)", function(done){
+        redis_client.del('rails:user:localhost:map_key');
+        var sql = querystring.stringify({
+          sql: "SELECT * FROM test_table_private_1",
+		      cache_buster:4 // this is to avoid getting the cached response
+        });
+        assert.response(server, {
+            headers: {host: 'localhost'},
+            url: '/tiles/gadm4/6/31/24.png?' + sql,
+            method: 'GET'
+        },{}, function(res) {
+          var err = null;
+          try {
+            assert.equal(res.statusCode, 500);
+          } catch (e) {
+            err = e;
+          }
+          redis_client.hset('rails:user:localhost', 'map_key', '1234', function(e, success) {
+            if ( e ) err += ' -- redis: ' + err;
+            done(err);
+          });
+        });
     });
 
     suiteTeardown(function(done) {
