@@ -239,7 +239,7 @@ suite('server', function() {
           map_key: 1235
         });
         assert.response(server, {
-            headers: {host: 'vizzuality.localhost.lan'},
+            headers: {host: 'localhost'},
             url: '/tiles/gadm4/6/31/24.png?' + sql,
             method: 'GET'
         },{
