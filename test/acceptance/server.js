@@ -72,6 +72,8 @@ suite('server', function() {
         }, function() { done(); });
     });
     
+    // TODO: fix this, POSTing good style should be forbidden when not authenticated
+    // See https://github.com/Vizzuality/cartodb-management/issues/155
     test("post'ing good style returns 200", function(done){
         assert.response(server, {
             url: '/tiles/my_table5/style',
@@ -84,28 +86,39 @@ suite('server', function() {
         });
     });
     
-    test("post'ing good style returns 200 then getting returns original style", function(done){
-        var style = 'Map {background-color:#fff;}';
+    test("post'ing good style returns 200 then getting returns new style", function(done){
+        var style = 'Map {background-color:#f0f;}';
         assert.response(server, {
             url: '/tiles/my_table5/style',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: querystring.stringify({style: style})
-        },{
-        }, function(res) { 
-            assert.equal(res.statusCode, 200, res.body);
+            data: querystring.stringify({style: style, map_key: 1234})
+        },{}, function(res) { 
+        assert.equal(res.statusCode, 200, res.body);
 
+            // Retrive style with authenticated request
             assert.response(server, {
                 headers: {host: 'localhost'},
-                url: '/tiles/my_table5/style',
+                url: '/tiles/my_table5/style?map_key=1234',
                 method: 'GET'
-            },{
-                status: 200,
-                body: JSON.stringify({style: style})
-            }, function() { done(); });
+            },{}, function(res) {
+            assert.equal(res.statusCode, 200, res.body);
+            assert.deepEqual(JSON.parse(res.body), {style: style});
+
+              // Now retrive style with unauthenticated request
+              assert.response(server, {
+                  headers: {host: 'localhost'},
+                  url: '/tiles/my_table5/style',
+                  method: 'GET'
+              }, {}, function(res) {
+              assert.equal(res.statusCode, 200, res.body);
+              assert.deepEqual(JSON.parse(res.body), {style: style});
+
+                done();
+              });
+            });
 
         });
-    
     });
     
     test("get'ing blank infowindow returns blank", function(done){
@@ -275,7 +288,9 @@ suite('server', function() {
         // This test will add map_style records, like
         // 'map_style|null|publicuser|my_table',
         redis_client.keys("map_style|*", function(err, matches) {
-            _.each(matches, function(k) { redis_client.del(k); });
+            _.each(matches, function(k) { 
+                redis_client.del(k);
+            });
             done();
         });
     });
