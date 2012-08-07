@@ -72,11 +72,9 @@ suite('server', function() {
         }, function() { done(); });
     });
     
-    // TODO: fix this, POSTing good style should be forbidden when not authenticated
-    // See https://github.com/Vizzuality/cartodb-management/issues/155
     test("post'ing good style returns 200", function(done){
         assert.response(server, {
-            url: '/tiles/my_table5/style',
+            url: '/tiles/my_table5/style?map_key=1234',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
             data: querystring.stringify({style: 'Map {background-color:#fff;}'})
@@ -85,11 +83,26 @@ suite('server', function() {
             done();
         });
     });
+
+    // See https://github.com/Vizzuality/cartodb-management/issues/155
+    test("post'ing good style with no authentication returns an error", function(done){
+        assert.response(server, {
+            url: '/tiles/my_table5/style',
+            method: 'POST',
+            headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
+            data: querystring.stringify({style: 'Map {background-color:#fff;}'})
+        },{}, function(res) {
+            // fixme: we should really return a 403 here
+            assert.equal(res.statusCode, 500, res.body);
+            assert.ok(res.body.indexOf('map style cannot be changed by unauthenticated request') != -1, res.body);
+            done();
+        });
+    });
     
     test("post'ing good style returns 200 then getting returns new style", function(done){
         var style = 'Map {background-color:#f0f;}';
         assert.response(server, {
-            url: '/tiles/my_table5/style',
+            url: '/tiles/my_table5/style?map_key=1234',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
             data: querystring.stringify({style: style, map_key: 1234})
@@ -121,8 +134,20 @@ suite('server', function() {
         });
     });
 
-    // TODO: test that unauthenticated DELETE should fail
+    // Test that unauthenticated DELETE should fail
     // See https://github.com/Vizzuality/cartodb-management/issues/155
+    test("delete'ing style with no authentication returns an error", function(done){
+        assert.response(server, {
+            url: '/tiles/my_table5/style',
+            method: 'DELETE',
+            headers: {host: 'localhost'},
+        },{}, function(res) { 
+          // fixme: we should really return a 403 here
+          assert.equal(res.statusCode, 500, res.body);
+          assert.ok(res.body.indexOf('map style cannot be deleted by unauthenticated request') != -1, res.body);
+          done();
+        });
+    });
 
     test("delete'ing style returns 200 then getting returns default style", function(done){
         // this is the default style
