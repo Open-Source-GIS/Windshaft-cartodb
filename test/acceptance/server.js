@@ -50,7 +50,7 @@ suite('server', function() {
         }, function() { done(); });
     });
 
-/* FAILS !
+    // See https://github.com/Vizzuality/Windshaft-cartodb/issues/43
     test("get'ing style of private table should fail when unauthenticated",
     function(done) {
         assert.response(server, {
@@ -64,7 +64,6 @@ suite('server', function() {
           done();
         });
     });
-*/
 
     test("get'ing style of private table should succeed when authenticated",
     function(done) {
