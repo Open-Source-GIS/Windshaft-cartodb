@@ -313,6 +313,31 @@ suite('server', function() {
             headers: { 'Content-Type': 'text/javascript; charset=utf-8; charset=utf-8' }
         }, function() { done(); });
     });
+
+    test("get'ing the grid of a private table should fail when unauthenticated",
+    function(done) {
+        assert.response(server, {
+            headers: {host: 'localhost'},
+            url: '/tiles/test_table_private_1/6/31/24.grid.json',
+            method: 'GET'
+        },{}, function(res) {
+          // NOTE: it would be better to get a '403 - forbidden' here...
+          assert.equal(res.statusCode, 500, res.body);
+          done();
+        });
+    });
+
+    test("get'ing the grid of a private table should succeed when authenticated",
+    function(done) {
+        assert.response(server, {
+            headers: {host: 'localhost'},
+            url: '/tiles/test_table_private_1/6/31/24.grid.json?map_key=1234',
+            method: 'GET'
+        },{}, function(res) {
+          assert.equal(res.statusCode, 200, res.body);
+          done();
+        });
+    });
     
     /////////////////////////////////////////////////////////////////////////////////
     //
@@ -356,25 +381,13 @@ suite('server', function() {
         }, function() { done(); });
     });
 
-    test("get'ing a tile with data from private table should succeed when authenticated", function(done){
-        // NOTE: may fail if grainstore < 0.3.0 is used by Windshaft
-        var sql = querystring.stringify({sql: "SELECT * FROM test_table_private_1", map_key: 1234})
-        assert.response(server, {
-            headers: {host: 'localhost'},
-            url: '/tiles/gadm4/6/31/24.png?' + sql,
-            method: 'GET'
-        },{
-            status: 200,
-            headers: { 'Content-Type': 'image/png' }
-        }, function() { done(); });
-    });
-
     // See https://github.com/Vizzuality/Windshaft-cartodb/issues/38
     test("get'ing a tile with data from private table should succeed when authenticated with api_key", function(done){
         // NOTE: may fail if grainstore < 0.3.0 is used by Windshaft
         var sql = querystring.stringify({sql: "SELECT * FROM test_table_private_1", api_key: 1234})
         assert.response(server, {
             headers: {host: 'localhost'},
+            // NOTE: we encode a public table in the URL !
             url: '/tiles/gadm4/6/31/24.png?' + sql,
             method: 'GET'
         },{
@@ -401,7 +414,7 @@ suite('server', function() {
         var sql = querystring.stringify({
           sql: "SELECT * FROM test_table_private_1",
 		      cache_buster:3, // this is to avoid getting the cached response
-          // 1235 is written in rails:users:vizzuality:map_key SET
+          // 1235 is written in rails:users:localhost:map_key SET
           // See https://github.com/Vizzuality/Windshaft-cartodb/issues/39
           map_key: 1235
         });
