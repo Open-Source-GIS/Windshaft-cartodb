@@ -99,7 +99,7 @@ suite('server', function() {
     
     test("post'ing bad style returns 400 with error", function(done){
         assert.response(server, {
-            url: '/tiles/my_table3/style',
+            url: '/tiles/my_table3/style?map_key=1234',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
             data: querystring.stringify({style: '#my_table3{backgxxxxxround-color:#fff;}'})
@@ -111,7 +111,7 @@ suite('server', function() {
     
     test("post'ing multiple bad styles returns 400 with error array", function(done){
         assert.response(server, {
-            url: '/tiles/my_table4/style',
+            url: '/tiles/my_table4/style?map_key=1234',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
             data: querystring.stringify({style: '#my_table4{backgxxxxxround-color:#fff;foo:bar}'})
@@ -152,12 +152,20 @@ suite('server', function() {
             url: '/tiles/my_table5/style',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: querystring.stringify({style: 'Map {background-color:#fff;}'})
+            data: querystring.stringify({style: 'Map {background-color:#aaa;}'})
         },{}, function(res) {
-            // fixme: we should really return a 403 here
-            assert.equal(res.statusCode, 500, res.body);
-            assert.ok(res.body.indexOf('map style cannot be changed by unauthenticated request') != -1, res.body);
-            done();
+          // fixme: we should really return a 403 here
+          assert.equal(res.statusCode, 500, res.body);
+          assert.ok(res.body.indexOf('map state cannot be changed by unauthenticated request') != -1, res.body);
+
+          assert.response(server, {
+              headers: {host: 'localhost'},
+              url: '/tiles/my_table5/style?map_key=1234',
+              method: 'GET'
+          },{
+              status: 200,
+              body: JSON.stringify({style: 'Map {background-color:#fff;}'})
+          }, function() { done(); });
         });
     });
     
@@ -202,18 +210,6 @@ suite('server', function() {
     //
     /////////////////////////////////////////////////////////////////////////////////
 
-    // See https://github.com/Vizzuality/Windshaft-cartodb/issues/38
-    test("delete'ing style with api_key is accepted", function(done){
-        assert.response(server, {
-            url: '/tiles/my_table5/style?api_key=1234',
-            method: 'DELETE',
-            headers: {host: 'localhost'},
-        },{}, function(res) { 
-          assert.equal(res.statusCode, 200, res.body);
-          done();
-        });
-    });
-
     // Test that unauthenticated DELETE should fail
     // See https://github.com/Vizzuality/cartodb-management/issues/155
     test("delete'ing style with no authentication returns an error", function(done){
@@ -224,8 +220,16 @@ suite('server', function() {
         },{}, function(res) { 
           // fixme: we should really return a 403 here
           assert.equal(res.statusCode, 500, res.body);
-          assert.ok(res.body.indexOf('map style cannot be deleted by unauthenticated request') != -1, res.body);
-          done();
+          assert.ok(res.body.indexOf('map state cannot be changed by unauthenticated request') != -1, res.body);
+          // check that the style wasn't really deleted !
+          assert.response(server, {
+              headers: {host: 'localhost'},
+              url: '/tiles/my_table5/style?map_key=1234',
+              method: 'GET'
+          },{
+              status: 200,
+              body: JSON.stringify({style: 'Map {background-color:#f0f;}'})
+          }, function() { done(); });
         });
     });
 
@@ -261,6 +265,18 @@ suite('server', function() {
               });
             });
 
+        });
+    });
+
+    // See https://github.com/Vizzuality/Windshaft-cartodb/issues/38
+    test("delete'ing style with api_key is accepted", function(done){
+        assert.response(server, {
+            url: '/tiles/my_table5/style?api_key=1234',
+            method: 'DELETE',
+            headers: {host: 'localhost'},
+        },{}, function(res) { 
+          assert.equal(res.statusCode, 200, res.body);
+          done();
         });
     });
 
