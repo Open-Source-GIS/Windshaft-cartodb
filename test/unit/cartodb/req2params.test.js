@@ -20,7 +20,7 @@ suite('req2params', function() {
           assert.ok(!req.query.hasOwnProperty('dbuser'), 'dbuser was removed from query');
           assert.ok(req.hasOwnProperty('params'), 'request has params');
           assert.ok(req.params.hasOwnProperty('interactivity'), 'request params have interactivity');
-          assert.equal(req.dbname, 'cartodb_test_user_1_db', 'could forge dbname: '+ req.params.dbname);
+          assert.equal(req.params.dbname, 'cartodb_test_user_1_db', 'could forge dbname: '+ req.params.dbname);
           assert.ok(!req.hasOwnProperty('dbuser'), 'could inject dbuser');
           done();
       });
