@@ -59,8 +59,8 @@ suite('server', function() {
             method: 'GET'
         },{
         }, function(res) {
-          // TODO: should be "403 - forbidden" instead
-          assert.equal(res.statusCode, 500, res.body);
+          // FIXME: should be 401 - Unauthorized
+          assert.equal(res.statusCode, 500); // , res.body);
           done();
         });
     });
@@ -476,7 +476,7 @@ suite('server', function() {
             url: '/tiles/gadm4/6/31/24.png?' + sql,
             method: 'GET'
         },{
-            status: 500,
+            status: 401,
         }, function() { done(); });
     });
 
@@ -493,7 +493,7 @@ suite('server', function() {
             url: '/tiles/gadm4/6/31/24.png?' + sql,
             method: 'GET'
         },{
-            status: 500,
+            status: 401,
         }, function() { done(); });
     });
 
@@ -510,7 +510,7 @@ suite('server', function() {
         },{}, function(res) {
           var err = null;
           try {
-            assert.equal(res.statusCode, 500);
+            assert.equal(res.statusCode, 401);
           } catch (e) {
             err = e;
           }
