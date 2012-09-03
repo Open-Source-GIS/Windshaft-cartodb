@@ -21,7 +21,7 @@
         "cluster2": "~0.3.1",
         "node-varnish": "0.1.1",
         "underscore"  : "1.1.x",
-        "grainstore"  : "~0.3.1",
+        "grainstore"  : "~0.5.0",
         "windshaft"  : "~0.5.7",
         "step": "0.0.x",
         "generic-pool": "1.0.x",
