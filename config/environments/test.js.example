@@ -5,9 +5,9 @@ var config = {
     ,enable_cors: true
     ,cache_enabled: false
     ,log_format: '[:date] :req[X-Real-IP] :method :req[Host]:url :status :response-time ms -> :res[Content-Type]'
+    ,postgres_auth_user: 'test_cartodb_user_<%= user_id %>'
     ,postgres: {
         user: "publicuser",
-        db_user: 'test_cartodb_user_<%= user_id %>',
         host: '127.0.0.1',
         port: 5432,
         srid: 4326,
