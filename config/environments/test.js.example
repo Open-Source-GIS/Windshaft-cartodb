@@ -16,6 +16,9 @@ var config = {
         srid: 4326,
         simplify: true
     }
+    ,millstone: {
+        cache_basedir: '/tmp/cdb-tiler-test/millstone'
+    }
     ,redis: {
         host: '127.0.0.1',
         port: 6333,

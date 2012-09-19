@@ -15,6 +15,9 @@ var config = {
         srid: 4326,
         simplify: true
     }
+    ,millstone: {
+        cache_basedir: '/home/ubuntu/tile_assets/'
+    }
     ,redis: {
         host: '127.0.0.1',
         port: 6379
