@@ -148,23 +148,31 @@ suite('server', function() {
     // See https://github.com/Vizzuality/cartodb-management/issues/155
     test("post'ing good style with no authentication returns an error", function(done){
         assert.response(server, {
-            url: '/tiles/my_table5/style',
+            url: '/tiles/my_table5/style?api_key=1234',
             method: 'POST',
             headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: querystring.stringify({style: 'Map {background-color:#aaa;}'})
+            data: querystring.stringify({style: 'Map {background-color:#fff;}'})
         },{}, function(res) {
-          // FIXME: should be 401 Unauthorized
-          assert.equal(res.statusCode, 500, res.body);
-          assert.ok(res.body.indexOf('map state cannot be changed by unauthenticated request') != -1, res.body);
-
+          assert.equal(res.statusCode, 200, res.body);
           assert.response(server, {
-              headers: {host: 'localhost'},
-              url: '/tiles/my_table5/style?map_key=1234',
-              method: 'GET'
-          },{
-              status: 200,
-              body: JSON.stringify({style: 'Map {background-color:#fff;}'})
-          }, function() { done(); });
+              url: '/tiles/my_table5/style',
+              method: 'POST',
+              headers: {host: 'localhost', 'Content-Type': 'application/x-www-form-urlencoded' },
+              data: querystring.stringify({style: 'Map {background-color:#aaa;}'})
+          },{}, function(res) {
+            // FIXME: should be 401 Unauthorized
+            assert.equal(res.statusCode, 500, res.body);
+            assert.ok(res.body.indexOf('map state cannot be changed by unauthenticated request') != -1, res.body);
+
+            assert.response(server, {
+                headers: {host: 'localhost'},
+                url: '/tiles/my_table5/style?map_key=1234',
+                method: 'GET'
+            },{
+                status: 200,
+                body: JSON.stringify({style: 'Map {background-color:#fff;}'})
+            }, function() { done(); });
+          });
         });
     });
     
